@@ -356,6 +356,24 @@ function createLibrary()
                     }
                 end
 
+                UI.Notifications.Position = UDim2.new(1,-25,0.5,0)
+                UI.Notifications.AnchorPoint = Vector2.new(1,0.5)
+                function Window:Notify(Text)
+                    -- Requirements
+                    Library:Require(Text, "Missing Text argument for :Notify")
+                    
+                    local obj = Atlas.Objects.Notif:Clone()
+                    obj.Inner.content.TextLabel.Text = Text
+                    obj.Inner['!|divider'].BackgroundColor3 = LibArgs.Color
+                    obj.Visible = true
+                    obj.Parent = UI.Notifications
+                    
+
+                    task.wait(3)
+                    obj:Destroy()
+                    
+                end
+
                 local closeMenu
                 do
                     local menuButton = Library:CreateInvisButton(Background.Top.Menu)
