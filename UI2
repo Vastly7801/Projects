@@ -356,6 +356,19 @@ function createLibrary()
                     }
                 end
 
+                function Window:Notify(Text)
+                    -- Requirements
+                    Library:Require(Text, "Missing Text argument for :Notify")
+                    
+                    local obj = Atlas.Objects.Notif:Clone()
+                    obj.Inner.content.TextLabel.Text = Text
+                    obj.Parent = UI.Notifcations
+                    obj.Visible = true
+                    task.wait(1)
+                    obj:Destroy()
+                    
+                end
+
                 local closeMenu
                 do
                     local menuButton = Library:CreateInvisButton(Background.Top.Menu)
@@ -1222,19 +1235,6 @@ function createLibrary()
                             obj.Parent = holder
 
                             return element
-                        end
-
-                        function Elements:Notify(Text)
-                            -- Requirements
-                            Library:Require(Text, "Missing Text argument for :Notify")
-                            
-                            local obj = Atlas.Objects.Notif:Clone()
-                            obj.Inner.content.TextLabel.Text = Text
-                            obj.Parent = UI.Notifcations
-                            obj.Visible = true
-                            task.wait(1)
-                            obj:Destroy()
-                            
                         end
 
                         function Elements:CreateLabel(Text, TextWrapped)
