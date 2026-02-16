@@ -1,8 +1,8 @@
--- Islands V3
-if not LPH_OBFUSCATED then
-    LPH_JIT_MAX = function(...) return(...) end;
-    LPH_NO_VIRTUALIZE = function(...) return(...) end;
-end
+--[[ Islands V3
+--if not LPH_OBFUSCATED then
+  --  LPH_JIT_MAX = function(...) return(...) end;
+  --  LPH_NO_VIRTUALIZE = function(...) return(...) end;
+--end
 
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer and game.Players.LocalPlayer.Character
 
@@ -15,13 +15,13 @@ if workspace.PrivateServer.Value == false then
     }) repeat task.wait(1) until Loaded2
 end
 
-
+]]
 -------------------------------
 -- Needs To Be Changed Stuff --
 -------------------------------
 
-LastUpdated = 'Last Updated: March 8th 2025'
-ScriptVersion = 'v3.03'
+LastUpdated = 'Last Updated: February 15th, 2025'
+ScriptVersion = 'v3.04'
 DiscordInvite = 'https://discord.com/invite/r6RX9hSjkh'
 local Whitelisted = true
 local PV, PPV = 1234, 0
@@ -38,7 +38,7 @@ lastResizeTime = 0 -- for block printer
 ----------------------
 -- Update Detection --
 ----------------------
-
+--[[
 if game.PlaceVersion ~= PV and workspace.PrivateServer.Value == true then
     PromptLib1("Warning!","Script has not been updated for Islands Version: "..tostring(game.PlaceVersion)..".\nAnti-cheat could have been updated.\nAre you sure you want to load Project Z?",{
         {Text = "Yes",LayoutOrder = 0,Primary = false,Callback = function() Loaded4 = true end},
@@ -49,7 +49,7 @@ end
 if (isLGPremium and isLGPremium()) == true or not LPH_OBFUSCATED then
     Whitelisted = true
 end
-
+]]
 if Whitelisted then
     MultiOrSingle = "Multi"
 else
@@ -120,7 +120,7 @@ local VendingRemotes = {
 local onBlockHit = require(game:GetService("ReplicatedStorage").TS.tool.tools.shared["axe-tool"])['AxeTool']['onBlockHit']
 local onBlockHitFunction = getproto(onBlockHit, 2)
 local onBlockHitName = getconstant(onBlockHitFunction, 8)
-local onBlockHitValue = getconstant(onBlockHitFunction, 10)..getconstant(onBlockHitFunction, 11)
+local onBlockHitValue = getconstant(onBlockHitFunction, 10)--..getconstant(onBlockHitFunction, 11)
 
 -- hit with sword key
 local function getswordArgName()
@@ -141,22 +141,22 @@ local attemptHitValue = getconstant(attemptHit, 75)..getconstant(attemptHit, 76)
 -- pickup tool/fruits key
 local pickupTool = require(game:GetService("StarterPlayer").StarterPlayerScripts.TS.ui.inventory["client-inventory-service"])['ClientInventoryService']['pickupTool']
 local pickupToolName = getconstant(pickupTool, 23)
-local pickupToolValue = getconstant(pickupTool, 25)..getconstant(pickupTool, 26)
+local pickupToolValue = getconstant(pickupTool, 25)--..getconstant(pickupTool, 26)
 
 -- place block key
 local placeBlock = require(game:GetService("ReplicatedStorage").TS.tool.behaivor["connectable-placement"])['ConnectablePlacementBehavior']['placeBlock']
 local placeBlockName = getconstant(placeBlock, 50)
-local placeBlockValue = tostring(getconstant(placeBlock, 53))..tostring(getconstant(placeBlock, 54))
+local placeBlockValue = tostring(getconstant(placeBlock, 53))--..tostring(getconstant(placeBlock, 54))
 
 -- harvest crop key
 local breakCrop = require(game:GetService("StarterPlayer").StarterPlayerScripts.TS.block.crop["crop-service"])['CropService']['breakCrop']
 local breakCropName = getconstant(breakCrop, 22)
-local breakCropValue = getconstant(breakCrop, 26)..getconstant(breakCrop, 27)
+local breakCropValue = getconstant(breakCrop, 26)--..getconstant(breakCrop, 27)
 
 -- deposit tool 
 local depositTool = require(game.Players.LocalPlayer.PlayerScripts.TS.flame.controllers.workers["worker-controller"])['WorkerController']['depositTool']
 local depositToolName = getconstant(depositTool, 4)
-local depositToolValue = getconstant(depositTool, 7)..getconstant(depositTool, 8)
+local depositToolValue = getconstant(depositTool, 7)--..getconstant(depositTool, 8)
 
 -- shoot bow key
 local shootBowProjectile = require(game:GetService("Players").LocalPlayer.PlayerScripts.TS.flame.controllers.combat["projectile-controller"])['ProjectileController']['shootBowProjectile']
@@ -3848,6 +3848,22 @@ SelectedWildCropsDropdown = WildFarm:CreateDropdown("SelectedWildCropsFlag", {
     -- Mob Tab --
     -------------
 
+local pp1 = 'As you may have noticed, I have removed all Combat features from my script.'
+local pp2 = " This is because the game has updated and I have not figured out how to fix this yet, and probably won't as I have already tried."
+local pp3 = ' I took a very long break from scripting and forgot how to do some things.'
+local pp4 = " You can find the source code in the Project Z discord server and try to solve it yourself if you'd like to."
+local pp5 = ' Although please be cautious as being incorrect will result in your account being banned from Islands permanently.'
+local pp6 = ' If someone wanted to solve this for me and send me the code, I will consider implementing it into the script.'
+local pp7 = ' You can find the Discord Server invite on the Home page. :)'
+local entireString = pp1..pp2..pp3..pp4..pp5..pp6..pp7
+
+
+-- left section
+CombatTabLeftSection = CombatTab:CreateLeftSection("Mob Info")
+CombatTabLeftSection:CreateLabel(entireString,true)
+
+
+--[[
 -- left section
 CombatTabLeftSection = CombatTab:CreateLeftSection("Mob Farm")
 CombatTabLeftSection:CreateToggle("MobFarmToggleFlag", {
@@ -3940,7 +3956,8 @@ MobFarmAboveFarmSliderToggle = CombatTabLeftSection:CreateSliderToggle("MobFarmA
 ]]
 
 
--- right section
+--[[
+ right section
 CombatTabRightSection = CombatTab:CreateRightSection("Boss Farm")
 CombatTabRightSection:CreateToggle("BossFarmToggleFlag", {
     Name = "Boss Farm";
@@ -3986,7 +4003,8 @@ BossFarmAboveFarmSliderToggle = CombatTabRightSection:CreateSliderToggle("BossFa
         BossFarmToggleSettings.AboveFarming = value
         ToggleNotification(value, 'Above Farming')
     end;})
-]]
+-- ]]
+--[[
 CombatTabRightSection:CreateToggle("BossFarmAboveToggleFlag", {
     Name = "  - Above Boss Farming";
     Callback = function(value)
@@ -4146,7 +4164,8 @@ local GodmodeButton = CombatTabLeftSection2:CreateButton("Godmode V2", function(
         end
     end)
    ]]
-
+   
+-- ]]
     
 --------------
 -- Misc Tab --
