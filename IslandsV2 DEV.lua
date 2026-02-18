@@ -20,8 +20,8 @@ end
 -- Needs To Be Changed Stuff --
 -------------------------------
 
-LastUpdated = 'Last Updated: February 15th, 2025'
-ScriptVersion = 'v3.04'
+LastUpdated = 'Last Updated: February 17th, 2025'
+ScriptVersion = 'v3.05'
 DiscordInvite = 'https://discord.com/invite/r6RX9hSjkh'
 local Whitelisted = true
 local PV, PPV = 1234, 0
@@ -136,7 +136,8 @@ local function getswordArgName()
 end
 local attemptHit = getscriptclosure(game:GetService("ReplicatedStorage").TS.tool.tools.sword)
 local attemptHitName = getswordArgName()
-local attemptHitValue = getconstant(attemptHit, 75)..getconstant(attemptHit, 76)
+local attemptHitKey
+--local attemptHitValue = getconstant(attemptHit, 75)..getconstant(attemptHit, 76)
 
 -- pickup tool/fruits key
 local pickupTool = require(game:GetService("StarterPlayer").StarterPlayerScripts.TS.ui.inventory["client-inventory-service"])['ClientInventoryService']['pickupTool']
@@ -1052,7 +1053,7 @@ function HitMob(mob)
      -- animation:Play()
       
       
-        local args = {[1] = HashGen(),[2] = {[1] = {[attemptHitName] = attemptHitValue,["hitUnit"] = mob}}}
+        local args = {[1] = HashGen(),[2] = {[1] = {[attemptHitName] = attemptHitKey,["hitUnit"] = mob}}}
         RemotePathMain:WaitForChild(MeleeRemote):FireServer(unpack(args))
     end
 end
@@ -3847,7 +3848,7 @@ SelectedWildCropsDropdown = WildFarm:CreateDropdown("SelectedWildCropsFlag", {
     -------------
     -- Mob Tab --
     -------------
-
+--[[
 local pp1 = 'As you may have noticed, I have removed all Combat features from my script.'
 local pp2 = " This is because the game has updated and I have not figured out how to fix this yet, and probably won't as I have already tried."
 local pp3 = ' I took a very long break from scripting and forgot how to do some things.'
@@ -3856,72 +3857,91 @@ local pp5 = ' Although please be cautious as being incorrect will result in your
 local pp6 = ' If someone wanted to solve this for me and send me the code, I will consider implementing it into the script.'
 local pp7 = ' You can find the Discord Server invite on the Home page. :)'
 local entireString = pp1..pp2..pp3..pp4..pp5..pp6..pp7
+]]
 
 
--- left section
-CombatTabLeftSection = CombatTab:CreateLeftSection("Mob Info")
-CombatTabLeftSection:CreateLabel(entireString,true)
 
 
---[[
--- left section
+
 CombatTabLeftSection = CombatTab:CreateLeftSection("Mob Farm")
-CombatTabLeftSection:CreateToggle("MobFarmToggleFlag", {
-    Name = "Mob Farm";
-    Callback = function(value)
-        MobFarmToggle = value
-        ToggleNotification(value, 'Mob Farm')
-        while MobFarmToggle and task.wait() do
-            MobFarmFunction(MobFarmToggleSettings.SelectedMob)
-        end
-    end;
-    Default = false;})
-local SelectedMobsDropdown
-SelectedMobsDropdown = CombatTabLeftSection:CreateDropdown("SelectedMobsFlag", {
-    Name = "  - Selected Mob",
-    Values = MobTypes,
-    SelectType = "Single"; -- if u want multi dropdown change Single to Multi
-    Callback = function(value)
-        MobFarmToggleSettings.SelectedMob = value --s = SelectedMobsDropdown:Get()
-        local modified = {}
-        table.insert(modified, value)
-        DropdownNotification(modified)
-    end})
-CombatTabLeftSection:CreateToggle("MobNoContactFlag", {
-    Name = "  - No Contact";
-    Callback = function(value)
-        MobFarmToggleSettings.NoContact = value
-        ToggleNotification(value, 'No Contact')
-    end;
-    Default = MobFarmToggleSettings.NoContact;})
-    --
-CombatTabLeftSection:CreateToggle("MobUndergroundFarmingFlag", {
-    Name = "  - Underground Farming";
-    Callback = function(value)
-        MobFarmToggleSettings.UndergroundFarming = value
-        ToggleNotification(value, 'Underground Farming')
-    end;
-    Default = MobFarmToggleSettings.UndergroundFarming;})
-CombatTabLeftSection:CreateToggle("MobFarmAboveToggleFlag", {
-    Name = "  - Above Mob Farming";
-    Callback = function(value)
-        MobFarmToggleSettings.AboveFarming = value
-        ToggleNotification(value, 'Above Mob Farming')
-    end;
-    Default = MobFarmToggleSettings.AboveFarming;})
-CombatTabLeftSection:CreateSlider("MobFarmAboveOffsetFlag",{
-    Name = "   - Above Y Offset",
-    Min = 1;
-    Max = 25;
-    Default = MobFarmToggleSettings.YOffset;
-    DecimalPlaces = 0;
-    AllowValuesOutsideRange = true;
-    Callback = function(state)
-        MobFarmToggleSettings.YOffset = state
-    end,})
+local mobInfo = CombatTabLeftSection:CreateLabel('To get access to the Combat features you first need to manually hit a mob.',true)
+task.spawn(function()
+    repeat task.wait(1) until attemptHitKey
 
-    --[[
-CombatTabLeftSection:CreateSliderToggle("MobFarmAboveOffsetFlag","MobFarmAboveToggleFlag",{
+    -- left section
+    CombatTabLeftSection:CreateToggle("MobFarmToggleFlag", {
+        Name = "Mob Farm";
+        Callback = function(value)
+            MobFarmToggle = value
+            ToggleNotification(value, 'Mob Farm')
+            while MobFarmToggle and task.wait() do
+                MobFarmFunction(MobFarmToggleSettings.SelectedMob)
+            end
+        end;
+        Default = false;})
+    local SelectedMobsDropdown
+    SelectedMobsDropdown = CombatTabLeftSection:CreateDropdown("SelectedMobsFlag", {
+        Name = "  - Selected Mob",
+        Values = MobTypes,
+        SelectType = "Single"; -- if u want multi dropdown change Single to Multi
+        Callback = function(value)
+            MobFarmToggleSettings.SelectedMob = value --s = SelectedMobsDropdown:Get()
+            local modified = {}
+            table.insert(modified, value)
+            DropdownNotification(modified)
+        end})
+    CombatTabLeftSection:CreateToggle("MobNoContactFlag", {
+        Name = "  - No Contact";
+        Callback = function(value)
+            MobFarmToggleSettings.NoContact = value
+            ToggleNotification(value, 'No Contact')
+        end;
+        Default = MobFarmToggleSettings.NoContact;})
+        --
+    CombatTabLeftSection:CreateToggle("MobUndergroundFarmingFlag", {
+        Name = "  - Underground Farming";
+        Callback = function(value)
+            MobFarmToggleSettings.UndergroundFarming = value
+            ToggleNotification(value, 'Underground Farming')
+        end;
+        Default = MobFarmToggleSettings.UndergroundFarming;})
+    CombatTabLeftSection:CreateToggle("MobFarmAboveToggleFlag", {
+        Name = "  - Above Mob Farming";
+        Callback = function(value)
+            MobFarmToggleSettings.AboveFarming = value
+            ToggleNotification(value, 'Above Mob Farming')
+        end;
+        Default = MobFarmToggleSettings.AboveFarming;})
+    CombatTabLeftSection:CreateSlider("MobFarmAboveOffsetFlag",{
+        Name = "   - Above Y Offset",
+        Min = 1;
+        Max = 25;
+        Default = MobFarmToggleSettings.YOffset;
+        DecimalPlaces = 0;
+        AllowValuesOutsideRange = true;
+        Callback = function(state)
+            MobFarmToggleSettings.YOffset = state
+        end,})
+
+        --[[
+    CombatTabLeftSection:CreateSliderToggle("MobFarmAboveOffsetFlag","MobFarmAboveToggleFlag",{
+            Name = "Y Offset / Above Farm";
+            Min = 1;
+            Max = 25;
+            SliderDefault = MobFarmToggleSettings.YOffset;
+            ToggleDefault = false;
+            DecimalPlaces = 0;
+            AllowValuesOutsideRange = true;
+            SliderCallback = function(state)
+                MobFarmToggleSettings.YOffset = state
+            end;
+            ToggleCallback = function(value)
+                MobFarmToggleSettings.AboveFarming = value
+                ToggleNotification(value, 'Above Farming')
+            end;})
+
+    --
+    MobFarmAboveFarmSliderToggle = CombatTabLeftSection:CreateSliderToggle("MobFarmAboveOffsetFlag","MobFarmAboveToggleFlag",{
         Name = "Y Offset / Above Farm";
         Min = 1;
         Max = 25;
@@ -3936,224 +3956,212 @@ CombatTabLeftSection:CreateSliderToggle("MobFarmAboveOffsetFlag","MobFarmAboveTo
             MobFarmToggleSettings.AboveFarming = value
             ToggleNotification(value, 'Above Farming')
         end;})
-
---[[
-MobFarmAboveFarmSliderToggle = CombatTabLeftSection:CreateSliderToggle("MobFarmAboveOffsetFlag","MobFarmAboveToggleFlag",{
-    Name = "Y Offset / Above Farm";
-    Min = 1;
-    Max = 25;
-    SliderDefault = MobFarmToggleSettings.YOffset;
-    ToggleDefault = false;
-    DecimalPlaces = 0;
-    AllowValuesOutsideRange = true;
-    SliderCallback = function(state)
-        MobFarmToggleSettings.YOffset = state
-    end;
-    ToggleCallback = function(value)
-        MobFarmToggleSettings.AboveFarming = value
-        ToggleNotification(value, 'Above Farming')
-    end;})
-]]
+    ]]
 
 
---[[
- right section
-CombatTabRightSection = CombatTab:CreateRightSection("Boss Farm")
-CombatTabRightSection:CreateToggle("BossFarmToggleFlag", {
-    Name = "Boss Farm";
-    Callback = function(value)
-        BossFarmToggle = value
-        ToggleNotification(value, 'Boss Farm')
-        while BossFarmToggle and task.wait() do
-            BossFarmFunction(BossFarmToggleSettings.SelectedBoss)
-        end
-    end;
-    Default = false;})
-local SelectedBossesDropdown
-SelectedBossesDropdown = CombatTabRightSection:CreateDropdown("SelectedBossesFlag", {
-    Name = "  - Selected Boss",
-    Values = BossTypes,
-    SelectType = "Single"; -- if u want multi dropdown change Single to Multi
-    Callback = function(value)
-        BossFarmToggleSettings.SelectedBoss = value --es = SelectedMobsDropdown:Get()
-        local modified = {}
-        table.insert(modified, value)
-        DropdownNotification(modified)
-    end})
-CombatTabRightSection:CreateToggle("BossUndergroundFarmingFlag", {
-    Name = "  - Underground Farming";
-    Callback = function(value)
-        BossFarmToggleSettings.UndergroundFarming = value
-        ToggleNotification(value, 'Underground Farming')
-    end;
-    Default = BossFarmToggleSettings.UndergroundFarming;})
-    --[[
-BossFarmAboveFarmSliderToggle = CombatTabRightSection:CreateSliderToggle("BossFarmAboveOffsetFlag","BossFarmAboveToggleFlag",{
-    Name = "Y Offset / Above Farm";
-    Min = 1;
-    Max = 25;
-    SliderDefault = BossFarmToggleSettings.YOffset;
-    ToggleDefault = false;
-    DecimalPlaces = 0;
-    AllowValuesOutsideRange = true;
-    SliderCallback = function(state)
-        BossFarmToggleSettings.YOffset = state
-    end;
-    ToggleCallback = function(value)
-        BossFarmToggleSettings.AboveFarming = value
-        ToggleNotification(value, 'Above Farming')
-    end;})
--- ]]
---[[
-CombatTabRightSection:CreateToggle("BossFarmAboveToggleFlag", {
-    Name = "  - Above Boss Farming";
-    Callback = function(value)
-        BossFarmToggleSettings.AboveFarming = value
-        ToggleNotification(value, 'Above Boss Farming')
-    end;
-    Default = BossFarmToggleSettings.AboveFarming;})
-CombatTabRightSection:CreateSlider("BossFarmAboveOffsetFlag",{
-    Name = "   - Above Y Offset",
-    Min = 1;
-    Max = 25;
-    Default = BossFarmToggleSettings.YOffset;
-    DecimalPlaces = 0;
-    AllowValuesOutsideRange = true;
-    Callback = function(state)
-        BossFarmToggleSettings.YOffset = state
-    end,})
+    -- right section
 
-
-CombatTabRightSection:CreateToggle("RespawnBossToggleFlag", {
-    Name = "  - Auto Respawn Boss";
-    Callback = function(value)
-        ToggleNotification(value, 'Auto Respawn Boss')
-        BossFarmToggleSettings.RespawnBoss = valuew
-    end;
-    Default = BossFarmToggleSettings.RespawnBoss;})
-    
-
-CombatTabRightSection:CreateToggle("BossNoContactFlag", {
-    Name = "  - No Contact";
-    Callback = function(value)
-        BossFarmToggleSettings.NoContact = value
-        ToggleNotification(value, 'No Contact')
-    end;
-    Default = BossFarmToggleSettings.NoContact;})
-
--- left section2
-CombatTabLeftSection2 = CombatTab:CreateLeftSection("Combat Utilities")
-if Whitelisted then
-    CombatTabLeftSection2:CreateToggle("MobKillAuraToggleFlag", {
-        Name = "Mob Kill Aura";
+    CombatTabRightSection = CombatTab:CreateRightSection("Boss Farm")
+    CombatTabRightSection:CreateToggle("BossFarmToggleFlag", {
+        Name = "Boss Farm";
         Callback = function(value)
-            KillAuraToggle = value
-            ToggleNotification(value, 'Mob Kill Aura')
-            while KillAuraToggle and task.wait() do
-                local Distance, Target = math.huge, nil
-                for i,v in ipairs(WildernessEntities:GetChildren()) do
-                    if v:FindFirstChild('HumanoidRootPart') then
-                        local mag = (v.HumanoidRootPart.Position - Character.HumanoidRootPart.Position).Magnitude
-                        if mag < Distance then
-                            Distance = mag
-                            Target = v
-                        end
-                    end
-                end
-                if Target then
-                    if Character:FindFirstChildWhichIsA('Tool') then
-                        local Tool = Character:FindFirstChildWhichIsA('Tool')
-                        if table.find(BookTypes, Tool.Name) then
-                            task.spawn(function()
-                                ShootSpell(Target)
-                            end)
-                        else
-                            task.wait(MobFarmHitWait)
-                            task.spawn(function()
-                                HitMob(Target) 
-                            end)
-                        end
-                    else
-                        -- no tool
-                        EquipTool(BestWeapon_Inv())
-                    end  
-                end  
+            BossFarmToggle = value
+            ToggleNotification(value, 'Boss Farm')
+            while BossFarmToggle and task.wait() do
+                BossFarmFunction(BossFarmToggleSettings.SelectedBoss)
             end
         end;
         Default = false;})
+    local SelectedBossesDropdown
+    SelectedBossesDropdown = CombatTabRightSection:CreateDropdown("SelectedBossesFlag", {
+        Name = "  - Selected Boss",
+        Values = BossTypes,
+        SelectType = "Single"; -- if u want multi dropdown change Single to Multi
+        Callback = function(value)
+            BossFarmToggleSettings.SelectedBoss = value --es = SelectedMobsDropdown:Get()
+            local modified = {}
+            table.insert(modified, value)
+            DropdownNotification(modified)
+        end})
+    CombatTabRightSection:CreateToggle("BossUndergroundFarmingFlag", {
+        Name = "  - Underground Farming";
+        Callback = function(value)
+            BossFarmToggleSettings.UndergroundFarming = value
+            ToggleNotification(value, 'Underground Farming')
+        end;
+        Default = BossFarmToggleSettings.UndergroundFarming;})
+        --[[
+    BossFarmAboveFarmSliderToggle = CombatTabRightSection:CreateSliderToggle("BossFarmAboveOffsetFlag","BossFarmAboveToggleFlag",{
+        Name = "Y Offset / Above Farm";
+        Min = 1;
+        Max = 25;
+        SliderDefault = BossFarmToggleSettings.YOffset;
+        ToggleDefault = false;
+        DecimalPlaces = 0;
+        AllowValuesOutsideRange = true;
+        SliderCallback = function(state)
+            BossFarmToggleSettings.YOffset = state
+        end;
+        ToggleCallback = function(value)
+            BossFarmToggleSettings.AboveFarming = value
+            ToggleNotification(value, 'Above Farming')
+        end;})
+    -- ]]
+    --
+    CombatTabRightSection:CreateToggle("BossFarmAboveToggleFlag", {
+        Name = "  - Above Boss Farming";
+        Callback = function(value)
+            BossFarmToggleSettings.AboveFarming = value
+            ToggleNotification(value, 'Above Boss Farming')
+        end;
+        Default = BossFarmToggleSettings.AboveFarming;})
+    CombatTabRightSection:CreateSlider("BossFarmAboveOffsetFlag",{
+        Name = "   - Above Y Offset",
+        Min = 1;
+        Max = 25;
+        Default = BossFarmToggleSettings.YOffset;
+        DecimalPlaces = 0;
+        AllowValuesOutsideRange = true;
+        Callback = function(state)
+            BossFarmToggleSettings.YOffset = state
+        end,})
 
-        CombatTabLeftSection2:CreateToggle("PlayerKillAuraToggleFlag", {
-            Name = "Player Kill Aura";
+
+    CombatTabRightSection:CreateToggle("RespawnBossToggleFlag", {
+        Name = "  - Auto Respawn Boss";
+        Callback = function(value)
+            ToggleNotification(value, 'Auto Respawn Boss')
+            BossFarmToggleSettings.RespawnBoss = valuew
+        end;
+        Default = BossFarmToggleSettings.RespawnBoss;})
+        
+
+    CombatTabRightSection:CreateToggle("BossNoContactFlag", {
+        Name = "  - No Contact";
+        Callback = function(value)
+            BossFarmToggleSettings.NoContact = value
+            ToggleNotification(value, 'No Contact')
+        end;
+        Default = BossFarmToggleSettings.NoContact;})
+
+    -- left section2
+    CombatTabLeftSection2 = CombatTab:CreateLeftSection("Combat Utilities")
+    if Whitelisted then
+        CombatTabLeftSection2:CreateToggle("MobKillAuraToggleFlag", {
+            Name = "Mob Kill Aura";
             Callback = function(value)
-                PlayerKillauraToggle = value
-                ToggleNotification(value, 'Player Kill Aura')
-                while PlayerKillauraToggle and task.wait(MobFarmHitWait) do
+                KillAuraToggle = value
+                ToggleNotification(value, 'Mob Kill Aura')
+                while KillAuraToggle and task.wait() do
                     local Distance, Target = math.huge, nil
-                    for i,v in pairs(Players:GetChildren()) do
-                        if v ~= lp and v.Character and v.Character:FindFirstChild('HumanoidRootPart') then
-                            local mag = (v.Character.HumanoidRootPart.Position - Character.HumanoidRootPart.Position).Magnitude
+                    for i,v in ipairs(WildernessEntities:GetChildren()) do
+                        if v:FindFirstChild('HumanoidRootPart') then
+                            local mag = (v.HumanoidRootPart.Position - Character.HumanoidRootPart.Position).Magnitude
                             if mag < Distance then
                                 Distance = mag
                                 Target = v
                             end
                         end
                     end
-                    if Target and Target.Character then
-                        HitMob(Target.Character)
-                    end
+                    if Target then
+                        if Character:FindFirstChildWhichIsA('Tool') then
+                            local Tool = Character:FindFirstChildWhichIsA('Tool')
+                            if table.find(BookTypes, Tool.Name) then
+                                task.spawn(function()
+                                    ShootSpell(Target)
+                                end)
+                            else
+                                task.wait(MobFarmHitWait)
+                                task.spawn(function()
+                                    HitMob(Target) 
+                                end)
+                            end
+                        else
+                            -- no tool
+                            EquipTool(BestWeapon_Inv())
+                        end  
+                    end  
                 end
             end;
             Default = false;})
 
-            CombatTabLeftSection2:CreateToggle("BowAuraFlag", {
-                Name = "Bow Aura";
+            CombatTabLeftSection2:CreateToggle("PlayerKillAuraToggleFlag", {
+                Name = "Player Kill Aura";
                 Callback = function(value)
-                    BowAuraToggle = value
-                    ToggleNotification(value, 'Bow Aura')
-                    task.spawn(function()
-                        while BowAuraToggle and task.wait(BowAuraToggleSettings.Delay) do
-                            local Distance, Target = math.huge, nil
-                            for i,v in ipairs(WildernessEntities:GetChildren()) do
-                                if v:FindFirstChild('HumanoidRootPart') then
-                                    local mag = (v.HumanoidRootPart.Position - Character.HumanoidRootPart.Position).Magnitude
-                                    if mag < Distance then
-                                        Distance = mag
-                                        Target = v
-                                    end
+                    PlayerKillauraToggle = value
+                    ToggleNotification(value, 'Player Kill Aura')
+                    while PlayerKillauraToggle and task.wait(MobFarmHitWait) do
+                        local Distance, Target = math.huge, nil
+                        for i,v in pairs(Players:GetChildren()) do
+                            if v ~= lp and v.Character and v.Character:FindFirstChild('HumanoidRootPart') then
+                                local mag = (v.Character.HumanoidRootPart.Position - Character.HumanoidRootPart.Position).Magnitude
+                                if mag < Distance then
+                                    Distance = mag
+                                    Target = v
                                 end
                             end
-                            if Target then
-                                task.spawn(function()
-                                    ShootBow(Target)
-                                end)   
-                            end  
                         end
-                    end)
+                        if Target and Target.Character then
+                            HitMob(Target.Character)
+                        end
+                    end
                 end;
                 Default = false;})
-                
-        BowAuraDelaySlider = CombatTabLeftSection2:CreateSlider("BowAuraDelaySliderFlag",{
-            Name = "  - Bow Aura Delay";
-            Min = 0.1;
-            Max = 2;
-            Default = 0.5;
-            DecimalPlaces = 1;
-            AllowValuesOutsideRange = false;
-            Callback = function(value)
-                BowAuraToggleSettings.Delay = value
-        end})
-            
 
-        CombatTabLeftSection2:CreateToggle("DisableCombatIndicatorsFlag", {
-                Name = "Disable Damage Indicators";
+                CombatTabLeftSection2:CreateToggle("BowAuraFlag", {
+                    Name = "Bow Aura";
+                    Callback = function(value)
+                        BowAuraToggle = value
+                        ToggleNotification(value, 'Bow Aura')
+                        task.spawn(function()
+                            while BowAuraToggle and task.wait(BowAuraToggleSettings.Delay) do
+                                local Distance, Target = math.huge, nil
+                                for i,v in ipairs(WildernessEntities:GetChildren()) do
+                                    if v:FindFirstChild('HumanoidRootPart') then
+                                        local mag = (v.HumanoidRootPart.Position - Character.HumanoidRootPart.Position).Magnitude
+                                        if mag < Distance then
+                                            Distance = mag
+                                            Target = v
+                                        end
+                                    end
+                                end
+                                if Target then
+                                    task.spawn(function()
+                                        ShootBow(Target)
+                                    end)   
+                                end  
+                            end
+                        end)
+                    end;
+                    Default = false;})
+                    
+            BowAuraDelaySlider = CombatTabLeftSection2:CreateSlider("BowAuraDelaySliderFlag",{
+                Name = "  - Bow Aura Delay";
+                Min = 0.1;
+                Max = 2;
+                Default = 0.5;
+                DecimalPlaces = 1;
+                AllowValuesOutsideRange = false;
                 Callback = function(value)
-                    lp.PlayerScripts.TS.combat["damage-indicators"].Disabled = value
-                    ToggleNotification(value, 'Disable Damage Indicators')
-                end;
-                Default = BowAuraToggleSettings.Delay;})
-    else
-    CombatTabLeftSection21 = CombatTabLeftSection2:CreateLabel("<b>You're missing out!</b> Buy Premium to get gain access to this section. This section includes amazing features such as: Killaura, Player Killaura, Bow Aura, Disable Damage Indicators & More Coming Soon!",true)
-end
+                    BowAuraToggleSettings.Delay = value
+            end})
+                
+
+            CombatTabLeftSection2:CreateToggle("DisableCombatIndicatorsFlag", {
+                    Name = "Disable Damage Indicators";
+                    Callback = function(value)
+                        lp.PlayerScripts.TS.combat["damage-indicators"].Disabled = value
+                        ToggleNotification(value, 'Disable Damage Indicators')
+                    end;
+                    Default = BowAuraToggleSettings.Delay;})
+        else
+        CombatTabLeftSection21 = CombatTabLeftSection2:CreateLabel("<b>You're missing out!</b> Buy Premium to get gain access to this section. This section includes amazing features such as: Killaura, Player Killaura, Bow Aura, Disable Damage Indicators & More Coming Soon!",true)
+    end
+
+end)
+
+--
+
 
     --[[
 local GodmodeButton = CombatTabLeftSection2:CreateButton("Godmode V2", function()
@@ -5759,6 +5767,25 @@ end)
 -- Make Sure This Stuff Is Last --
 ----------------------------------
 
+-- Grab attemptHitKey
+task.spawn(function()
+    local oldNamecall
+    oldNamecall = hookmetamethod(game, '__namecall', function(self, ...)
+        local method = getnamecallmethod()
+        local args = {...}
+        if attemptHitKey then
+            return oldNamecall(self, ...)
+        end
+
+        if method == 'FireServer' and self.Name == MeleeRemote then
+            local targetTable = args[2][1]
+            attemptHitKey = targetTable[attemptHitName]
+        end
+
+        return oldNamecall(self, ...)
+    end)
+end)
+
 -- destroy seats
 task.spawn(function()
     LPH_NO_VIRTUALIZE(function() -- removes obfuscation to make this section MUCH faster
@@ -5830,6 +5857,7 @@ task.spawn(function()
         return olderror(txt, ...)
     end)
 end)
+
 
 
 
