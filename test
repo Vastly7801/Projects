@@ -4,7 +4,7 @@ local function createWarning()
 
 local function generateRandomString()
 	-- Set the character pool (Letters and Numbers)
-	local charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	local charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 	-- Randomly pick a length between 10 and 20
 	local length = math.random(10, 20)
@@ -160,7 +160,7 @@ Converted["_1Multiline"].AutomaticSize = Enum.AutomaticSize.Y
 Converted["_1Multiline"].BackgroundColor3 = Color3.fromRGB(30.00000011175871, 30.00000011175871, 30.00000011175871)
 Converted["_1Multiline"].BorderColor3 = Color3.fromRGB(27.000002190470695, 42.000001296401024, 53.000004440546036)
 Converted["_1Multiline"].Size = UDim2.new(0.925000012, 0, 0, 5)
-Converted["_1Multiline"].Name = generateRandomString()
+Converted["_1Multiline"].Name = '1'..generateRandomString()
 Converted["_1Multiline"].Parent = Converted["_Left"]
 
 Converted["_UICorner2"].CornerRadius = UDim.new(0, 5)
@@ -169,7 +169,7 @@ Converted["_UICorner2"].Parent = Converted["_1Multiline"]
 Converted["_Title1"].Font = Enum.Font.Gotham
 Converted["_Title1"].LineHeight = 1.0800000429153442
 Converted["_Title1"].RichText = true
-Converted["_Title1"].Text = "SCAM ALERT: You are using a stolen, paid version of the free Project Z Islands script. The original script is actually free and open-sourced. You have been scammed. Join the Project Z Discord server for the official free version."
+Converted["_Title1"].Text = "SCAM ALERT: You are using a stolen, paid version of the free Project Z Islands script. The original script is actually free and open-sourced. You have been scammed. Join the Project Z Discord server for the official free version. Vastly7801 at Project Z is the original creator of this stolen script."
 Converted["_Title1"].TextColor3 = Color3.fromRGB(200.00000327825546, 200.00000327825546, 200.00000327825546)
 Converted["_Title1"].TextSize = 16
 Converted["_Title1"].TextWrapped = true
@@ -205,7 +205,7 @@ Converted["_|padding"].Parent = Converted["_1Multiline"]
 Converted["_2Button"].BackgroundColor3 = Color3.fromRGB(30.00000011175871, 30.00000011175871, 30.00000011175871)
 Converted["_2Button"].BorderColor3 = Color3.fromRGB(27.000002190470695, 42.000001296401024, 53.000004440546036)
 Converted["_2Button"].Size = UDim2.new(0.925000012, 0, 0, 20)
-Converted["_2Button"].Name = generateRandomString()
+Converted["_2Button"].Name = '2'..generateRandomString()
 Converted["_2Button"].Parent = Converted["_Left"]
 
 Converted["_UICorner3"].CornerRadius = UDim.new(0, 5)
@@ -264,27 +264,27 @@ Converted["_3blank"].BackgroundColor3 = Color3.fromRGB(30.00000011175871, 30.000
 Converted["_3blank"].BackgroundTransparency = 1
 Converted["_3blank"].BorderColor3 = Color3.fromRGB(27.000002190470695, 42.000001296401024, 53.000004440546036)
 Converted["_3blank"].Size = UDim2.new(0.925000012, 0, 0, 20)
-Converted["_3blank"].Name = generateRandomString()
+Converted["_3blank"].Name = '3'..generateRandomString()
 Converted["_3blank"].Parent = Converted["_Left"]
 
 Converted["_3blank1"].BackgroundColor3 = Color3.fromRGB(30.00000011175871, 30.00000011175871, 30.00000011175871)
 Converted["_3blank1"].BackgroundTransparency = 1
 Converted["_3blank1"].BorderColor3 = Color3.fromRGB(27.000002190470695, 42.000001296401024, 53.000004440546036)
 Converted["_3blank1"].Size = UDim2.new(0.925000012, 0, 0, 20)
-Converted["_3blank1"].Name = generateRandomString()
+Converted["_3blank1"].Name = '3'..generateRandomString()
 Converted["_3blank1"].Parent = Converted["_Left"]
 
 Converted["_3blank2"].BackgroundColor3 = Color3.fromRGB(30.00000011175871, 30.00000011175871, 30.00000011175871)
 Converted["_3blank2"].BackgroundTransparency = 1
 Converted["_3blank2"].BorderColor3 = Color3.fromRGB(27.000002190470695, 42.000001296401024, 53.000004440546036)
 Converted["_3blank2"].Size = UDim2.new(0.925000012, 0, 0, 20)
-Converted["_3blank2"].Name = generateRandomString()
+Converted["_3blank2"].Name = '3'..generateRandomString()
 Converted["_3blank2"].Parent = Converted["_Left"]
 
 Converted["_4Button"].BackgroundColor3 = Color3.fromRGB(30.00000011175871, 30.00000011175871, 30.00000011175871)
 Converted["_4Button"].BorderColor3 = Color3.fromRGB(27.000002190470695, 42.000001296401024, 53.000004440546036)
 Converted["_4Button"].Size = UDim2.new(0.925000012, 0, 0, 20)
-Converted["_4Button"].Name = generateRandomString()
+Converted["_4Button"].Name = '4'..generateRandomString()
 Converted["_4Button"].Parent = Converted["_Left"]
 
 Converted["_UICorner4"].CornerRadius = UDim.new(0, 5)
