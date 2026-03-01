@@ -113,7 +113,7 @@ Converted["_Title"].Parent = Converted["_Top"]
 Converted["_UISizeConstraint"].Parent = Converted["_Title"]
 
 Converted["_ImageLabel"].Image = "rbxassetid://1764960410"
-Converted["_ImageLabel"].ImageContent = Content
+--Converted["_ImageLabel"].ImageContent = Content
 Converted["_ImageLabel"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Converted["_ImageLabel"].BackgroundTransparency = 1
 Converted["_ImageLabel"].BorderColor3 = Color3.fromRGB(0, 0, 0)
