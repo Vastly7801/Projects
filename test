@@ -323,7 +323,7 @@ end)
 
 Converted["_Shadow"].Image = "rbxassetid://7912134082"
 Converted["_Shadow"].ImageColor3 = Color3.fromRGB(0, 0, 0)
-Converted["_Shadow"].ImageContent = Content
+--Converted["_Shadow"].ImageContent = Content
 Converted["_Shadow"].ImageTransparency = 0.6000000238418579
 Converted["_Shadow"].ScaleType = Enum.ScaleType.Slice
 Converted["_Shadow"].SliceCenter = Rect.new(35, 35, 385, 385)
