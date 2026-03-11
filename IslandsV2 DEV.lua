@@ -20,8 +20,8 @@ end
 -- Needs To Be Changed Stuff --
 -------------------------------
 
-LastUpdated = 'Last Updated: February 17th, 2025'
-ScriptVersion = 'v3.05'
+LastUpdated = 'Last Updated: March 10th, 2026'
+ScriptVersion = 'v69.01'
 DiscordInvite = 'https://discord.com/invite/r6RX9hSjkh'
 local Whitelisted = true
 local PV, PPV = 1234, 0
@@ -283,7 +283,7 @@ getgenv().SpookTurkeysToggle = false
 -- Mobility & Interaction
 getgenv().IsNoclipping = false
 getgenv().SelectedFieldOfViewAmount = 70
-
+getgenv().AutoSprintToggle = false
 
 
 
@@ -608,18 +608,190 @@ function CancelTweens()
     tpabort = false
 end
 
+function FilledCheck(Position)
+    local Parts = workspace:FindPartsInRegion3(Region3.new(Position, Position), nil, math.huge)
+    for i, v in next, Parts do
+        if v and v.Parent and (v.Parent.Name == "Blocks" or v.Parent.Parent.Name == 'Blocks' or v.Parent.Parent.Parent.Name == 'Blocks' ) then
+            return true, v
+        end
+    end
+    return false, nil
+end
 
+-- remove when done
+local function findClosestMissingBlock(centerPos)
+    local searchRadius = 9 -- Your original +/- 9 range
+    local blockSize = 3    -- Change this to your game's block size (e.g., 3 or 4)
+    
+    local closestMissingPos = nil
+    local shortestDistance = math.huge
+
+    -- Iterate through the grid in the X and Z planes
+    for x = -searchRadius, searchRadius, blockSize do
+            for z = -searchRadius, searchRadius, blockSize do
+                
+                -- Calculate the target coordinate to check
+                local checkPos = centerPos + Vector3.new(x, y, z)
+                
+                -- Define a tiny region around this specific grid point
+                local min = checkPos - Vector3.new(0.5, 0.5, 0.5)
+                local max = checkPos + Vector3.new(0.5, 0.5, 0.5)
+                local region = Region3.new(min, max)
+                
+                -- Check if a block exists at this specific coordinate
+                local parts = workspace:FindPartsInRegion3(region, nil, 10)
+                local foundBlock = false
+                
+                for _, p in ipairs(parts) do
+                    if p.Parent and p.Parent.Name == "Blocks" then
+                        foundBlock = true
+                        break
+                    end
+                end
+                
+                -- If no block was found at this grid coordinate, it's a "missing" block
+                if not foundBlock then
+                    local distance = (centerPos - checkPos).Magnitude
+                  --  local filled, blockBelow = FilledCheck(checkPos - Vector3.new(0,3,0))
+                   -- print(checkPos)
+                  --  print(filled, blockBelow)
+                    if distance < shortestDistance then 
+                   -- if (filled == true and blockBelow ~= nil and string.find(blockBelow.Name, 'sap') or blockBelow.Name == 'soil') then continue end
+                        shortestDistance = distance
+                        closestMissingPos = checkPos
+                    end
+                end
+            end
+    end
+
+    return closestMissingPos
+end
+
+function HitBlock(block,part)
+    if block and part then
+        RemotePathMain.CLIENT_BLOCK_HIT_REQUEST:InvokeServer({
+            block = block, 
+            part = part, 
+            pos = block.Position, 
+            norm = Vector3.new(-1, 0, 0), 
+            [onBlockHitName] = onBlockHitValue
+        })
+    end
+end
+
+function PlaceBlock(position,block)
+    if position and block then
+        local NewCF
+        if tostring(type(position)) == 'userdata' then
+            NewCF = position
+        elseif tostring(type(position)) == 'vector' then
+            NewCF = CFrame.new(position)
+        end
+        RemotePathMain.CLIENT_BLOCK_PLACE_REQUEST:InvokeServer({
+            cframe = NewCF,
+            blockType = block,
+            [placeBlockName] = placeBlockValue,
+            upperBlock = true
+        })
+    end
+end
+
+-- fix/remove when done
+
+function calcDist(a,b)
+    if a and b then
+        return (a - b).Magnitude
+    end
+end
 
 local FloatName = 'fefgeEFGEWFGehwfh32ffevew'
 
     local doInstaTp = false -- false // true
 
-    function TGoto(Goal, ForceTween, ModifiedSpeed, ForcePathfinding)
+function createFloat(pos)
+    pos = pos or nil
+
+    local Float = Instance.new('Part')
+    Float.Name = FloatName
+    Float.Parent = workspace
+    Float.Transparency = 0
+    Float.Size = Vector3.new(2, 0.2, 1.5)
+    Float.Anchored = true
+    local FloatValue = -3.1
+    if pos then
+        Float.CFrame = CFrame.new(pos - Vector3.new(0, FloatValue, 0))
+    else
+        Float.CFrame = CFrame.new(Character.HumanoidRootPart.Position - Vector3.new(0, FloatValue, 0))
+    end
+end
+
+function doTween(Goal, ModifiedSpeed, mag)
+    if not Goal then return end
+    ModifiedSpeed = ModifiedSpeed or 1
+
+    local tweenSpeed = GeneralSettings.tweenSpeed * 3 * ModifiedSpeed
+    local time = mag / tweenSpeed
+
+    local bp = Instance.new("BodyPosition")
+    bp.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bp.P = 100000 -- Proportional gain
+    bp.D = 1000 -- Derivative gain
+    bp.Position = Goal + Vector3.new(0, Character.Humanoid.HipHeight, 0)
+
+    local t = TweenService:Create(Character.HumanoidRootPart, TweenInfo.new(time, Enum.EasingStyle.Linear), {CFrame = CFrame.new(Goal + Vector3.new(0, Character.Humanoid.HipHeight, 0))})
+    Character.HumanoidRootPart.CFrame = CFrame.new(Character.HumanoidRootPart.Position.X, Goal.Y, Character.HumanoidRootPart.Position.Z)
+    t:Play()
+    ActiveTweens[t] = true
+
+    t.Completed:Connect(function()
+        bp:Destroy()
+        ActiveTweens[t] = nil
+
+        if workspace:FindFirstChild(FloatName) then
+            workspace[FloatName]:Destroy()
+        end
+
+        createFloat(Goal)
+    end)
+end
+
+function doWeirdTp(Goal)
+    if calcDist(Goal, Character.HumanoidRootPart.Position) < MaxRange then return end 
+
+    
+
+    local previousTool = Character:FindFirstChildWhichIsA('Tool')
+    local ClosestMissingBlock = findClosestMissingBlock(Goal)
+    if ClosestMissingBlock then
+        repeat task.wait()
+            Character.HumanoidRootPart.CFrame = CFrame.new(ClosestMissingBlock + Vector3.new(0,5,0))
+            PlaceBlock(ClosestMissingBlock, 'spawnBlock')
+        until isAreaFilled(ClosestMissingBlock, ClosestMissingBlock) or not Character or not Character:FindFirstChild('HumanoidRootPart')
+
+        createFloat(ClosestMissingBlock) 
+
+        game.ReplicatedStorage["rbxts_include"]["node_modules"]["@rbxts"].net.out['_NetManaged']:WaitForChild("client_request_18"):InvokeServer({{}})
+                  
+        local spawnBlock = Blocks:WaitForChild('spawnBlock')
+        repeat task.wait()
+            EquipTool('stonePickaxe')
+            HitBlock(spawnBlock, spawnBlock.spawn)
+            createFloat(ClosestMissingBlock)
+        until not spawnBlock or not spawnBlock:FindFirstChild('spawn') or not Character or not Character:FindFirstChild('HumanoidRootPart')
+        if previousTool then
+            EquipTool(previousTool)
+        end
+    end
+
+end
+
+    function TGoto(Goal, ForceTween, ModifiedSpeed, firstWeird)
         
         ForceTween = ForceTween or false
         ModifiedSpeed = ModifiedSpeed or 1
-        ForcePathfinding = ForcePathfinding or false
+        firstWeird = firstWeird or false
         MaxRange = 25
+
         
         if Character:FindFirstChildOfClass('Humanoid') and Character:FindFirstChildOfClass('Humanoid').SeatPart then
             Character:FindFirstChildOfClass('Humanoid').Sit = false
@@ -628,52 +800,27 @@ local FloatName = 'fefgeEFGEWFGehwfh32ffevew'
 
         if GeneralSettings.TeleportType == 'Pathfinding' then -- or ForcePathfinding then
             DoPathFind(Goal)
-        elseif GeneralSettings.TeleportType == 'Instant Teleport' then
-          --   Character.HumanoidRootPart.CFrame = CFrame.new(Goal + Vector3.new(0, Character.Humanoid.HipHeight, 0))
-            local Float = Instance.new('Part')
-			Float.Name = FloatName
-			Float.Parent = workspace
-			Float.Transparency = 1
-			Float.Size = Vector3.new(2,0.2,1.5)
-			Float.Anchored = true
-			local FloatValue = -3.1
-			Float.CFrame = Character.HumanoidRootPart.CFrame * CFrame.new(0,FloatValue,0)
-            task.wait()
+
         elseif GeneralSettings.TeleportType == 'Tween' then
 
-            local mag = (Character.HumanoidRootPart.Position - Goal).Magnitude
-            if mag >= MaxRange or ForceTween then
-                local tweenSpeed = GeneralSettings.tweenSpeed * 3 * ModifiedSpeed
-                local time = mag / tweenSpeed
+            local mag = calcDist(Goal, Character.HumanoidRootPart.Position)
 
-                local bp = Instance.new("BodyPosition")
-                bp.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                bp.P = 100000 -- Proportional gain
-                bp.D = 1000 -- Derivative gain
-                bp.Position = Goal + Vector3.new(0, Character.Humanoid.HipHeight, 0)
-
-                local t = TweenService:Create(Character.HumanoidRootPart, TweenInfo.new(time, Enum.EasingStyle.Linear), {CFrame = CFrame.new(Goal + Vector3.new(0, Character.Humanoid.HipHeight, 0))})
-                t:Play()
-                ActiveTweens[t] = true
-
-                t.Completed:Connect(function()
-                    bp:Destroy()
-                    ActiveTweens[t] = nil
-
-                    if workspace:FindFirstChild(FloatName) then
-                        workspace[FloatName]:Destroy()
-                    end
-
-                    local Float = Instance.new('Part')
-                    Float.Name = FloatName
-                    Float.Parent = workspace
-                    Float.Transparency = 1
-                    Float.Size = Vector3.new(2, 0.2, 1.5)
-                    Float.Anchored = true
-                    local FloatValue = -3.1
-                    Float.CFrame = Character.HumanoidRootPart.CFrame * CFrame.new(0, FloatValue, 0)
-                end)
+            if firstWeird and doInstaTp then
+                doWeirdTp(Goal)
             end
+
+            if ForceTween then
+               -- doTween(Goal, ModifiedSpeed, mag) -- MAYBE REMOVE WHEN DONE
+            else
+                -- remove when done
+                if doInstaTp then
+                    doWeirdTp(Goal)
+                else
+                    if mag >= MaxRange or ForceTween then
+                        doTween(Goal, ModifiedSpeed, mag)
+                    end
+                end   
+            end 
         end
     end
 
@@ -738,6 +885,39 @@ function LoadIsland(island)
         end
     end                   
 end
+
+task.spawn(function()
+    local startSprint, stopSprint
+
+    for _, v in pairs(getgc()) do
+        if type(v) == "function" then
+            local info = debug.getinfo(v)
+            if info.name == 'startSprint' then
+                startSprint = v
+            elseif info.name == 'stopSprint' then
+                stopSprint = v
+            end
+            if startSprint and stopSprint then 
+                break 
+            end
+        end
+    end
+
+    if startSprint and AutoSprintToggle then
+        task.spawn(startSprint) 
+    end
+
+    if stopSprint then
+        local old
+        old = hookfunction(stopSprint, newcclosure(function(...)
+            if AutoSprintToggle then return end
+            return old(...)
+        end))
+    else
+        print("Could not find functions in memory. Check if the script has run yet.")
+    end
+end)
+
 
 function GetClosestBlockForSchematica()
     local Distance, TargetBlock = math.huge, nil
@@ -985,34 +1165,6 @@ function GetClosestWildBlock(BlockList)
     return TargetBlock
 end
 
-function HitBlock(block,part)
-    if block and part then
-        RemotePathMain.CLIENT_BLOCK_HIT_REQUEST:InvokeServer({
-            block = block, 
-            part = part, 
-            pos = block.Position, 
-            norm = Vector3.new(-1, 0, 0), 
-            [onBlockHitName] = onBlockHitValue
-        })
-    end
-end
-
-function PlaceBlock(position,block)
-    if position and block then
-        local NewCF
-        if tostring(type(position)) == 'userdata' then
-            NewCF = position
-        elseif tostring(type(position)) == 'vector' then
-            NewCF = CFrame.new(position)
-        end
-        RemotePathMain.CLIENT_BLOCK_PLACE_REQUEST:InvokeServer({
-            cframe = NewCF,
-            blockType = block,
-            [placeBlockName] = placeBlockValue,
-            upperBlock = true
-        })
-    end
-end
 
 function CollectDrop(drop)
     if drop then
@@ -1576,20 +1728,6 @@ function NoclipLoop()
         end
     end
 end
-
-
-
-function FilledCheck(Position)
-    local Parts = workspace:FindPartsInRegion3(Region3.new(Position, Position), nil, math.huge)
-    for i, v in next, Parts do
-        if v and v.Parent and v.Parent.Name == "Blocks" then
-            return true
-        end
-    end
-    return false
-end
-
-
 
 function isAreaFilled(Start,End)
     local Parts = workspace:FindPartsInRegion3(Region3.new(Start, End), nil, math.huge)
@@ -2248,7 +2386,7 @@ function MobFarmFunction(mob)
                 NewPosition = NewPosition + Vector3.new(0,MobFarmToggleSettings.YOffset,0)
             end
             if NewPosition then
-                TGoto(NewPosition,true,1,true)
+                TGoto(NewPosition,true,1)
                 if Character:FindFirstChildWhichIsA('Tool') then
                     local Tool = Character:FindFirstChildWhichIsA('Tool')
                     if table.find(BookTypes, Tool.Name) then
@@ -2583,6 +2721,7 @@ end
 
 
 
+
 local ActualTreeNames = {'treeMaple1', 'treeMaple2', 'treeBirch1', 'treeBirch2', 'treePine1', 'treeSpirit1', 'treeSpirit2', 'treeHickory1', 'treeHickory2', 'treeCherryBlossom'}
 
 function FindTree2()
@@ -2610,15 +2749,12 @@ function FindTree2()
             end
         end
     end
-
-    if TargetTree and Base and TargetTree.Position then
-        TGoto(TargetTree.Position)
         if WoodFarmToggleSettings.BreakBlockUnder then
             local TargetBlock, OldPos = nil, nil
             local region = workspace:FindPartsInRegion3(Region3.new(TargetTree.Position - Vector3.new(0, 3, 0), TargetTree.Position - Vector3.new(0, 3, 0)))
             if #region == 0 then
                 -- error with finding block under
-                error('No Block Found')
+                print('No Block Found')
             elseif #region == 1 then
                 -- perfect
                 TargetBlock = region[1]
@@ -2639,6 +2775,7 @@ function FindTree2()
             end
             
             while TargetBlock and TargetBlock.Parent and TargetTree and TargetTree.Parent and Base and WoodFarmToggleSettings.BreakBlockUnder and WoodFarmToggle and task.wait() do
+                TGoto(TargetTree.Position)
                 task.spawn(function()
                     HitBlock(TargetBlock, TargetBlock)
                     task.wait()
@@ -2653,13 +2790,14 @@ function FindTree2()
             end
         else
             while TargetTree and TargetTree.Parent and Base and WoodFarmToggle and task.wait() do
+                TGoto(TargetTree.Position)
                 task.spawn(function()
                     HitBlock(TargetTree, TargetTree)
                     task.wait()
                 end)
             end
         end
-    end
+    
 end
 
 
@@ -2880,7 +3018,7 @@ function HarvestCrops3(croplist)
         end
     end
     if Target and Target.Position then
-        TGoto(Target.Position, true)
+        TGoto(Target.Position)--, true)--, 1, f)
     end
 
     repeat task.wait() until (Target and DistanceCheck(Target.Position) <= 5) or not CropFarmToggle or not Target
@@ -2947,7 +3085,7 @@ function HarvestBerries()
             end
         end
         if Target and Target.Position then
-            TGoto(Target.Position, true)
+            TGoto(Target.Position)--, true)--, 1, true)
         end
     
     
@@ -3302,9 +3440,11 @@ end)
 
 -- right section
 HomeTabRightSection = HomeTab:CreateRightSection("Credits")
-HomeTabRightSection:CreateLabel("Creator: _vastly",false)
-HomeTabRightSection:CreateLabel("Scripter: _vastly",false)
-HomeTabRightSection:CreateLabel("Helpers: xe, Jxnt, Burhan",true)
+--HomeTabRightSection:CreateLabel("Project Z Creator: _vastly",false)
+HomeTabRightSection:CreateLabel("Main Developer: _vastly",false)
+HomeTabRightSection:CreateLabel("UI Design & Scripting: RoadToGlory#9879",true)
+HomeTabRightSection:CreateLabel("UI Bug Fixes: xekek",false)
+HomeTabRightSection:CreateLabel("Additional Code Help: xekek, jxnt, Burhan",true)
 
 -- right section 2
 HomeTabRightSection2 = HomeTab:CreateRightSection("❤️ Donators ❤️")
@@ -3389,6 +3529,7 @@ CropFarm:CreateToggle("ForceXPToggleFlag", {
     Callback = function(value)
         ToggleNotification(value, 'Force XP')
         ForceXPToggle = value
+        lp.PlayerScripts.TS.modules.experience["experience-listener"].Disabled = not ForceXPToggle
     end;
     Default = ForceXPToggle;})
 CropFarm:CreateToggle("SeedPlantAuraToggleFlag", {
@@ -4358,6 +4499,17 @@ MiscTabRightSection2:CreateToggle("NoclipToggleFlag", {
         end 
     end;
     Default = false;})
+MiscTabRightSection2:CreateToggle("AutoSprintToggleFlag", {
+    Name = "Auto Sprint";
+    Callback = function(value)
+        AutoSprintToggle = value
+        ToggleNotification(value, 'Auto Sprint')
+        if startSprint and AutoSprintToggle then
+            task.spawn(startSprint) 
+        end
+    end;
+    Default = false;})
+
 
 
 
@@ -5857,7 +6009,6 @@ task.spawn(function()
         return olderror(txt, ...)
     end)
 end)
-
 
 
 
